@@ -20,8 +20,9 @@
                 })
                 
                 .addTest(function longExecution(){
-                    for(var i = 0;i < 5000;i++)
-                        ; // Heavy work
+                    for(var i = 0;i < 1000;i++)
+                        for(var j = i + 1;j < 5000;j++)
+                            this.assert.isFalse(i == j);
                 })
                 
                 .addErrorTest(function errorTestFail(){
