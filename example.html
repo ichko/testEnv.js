@@ -29,7 +29,11 @@
                 })
                 
                 .addErrorTest(function errorTestSuccess(){
-                    throw new Error('Something went wrong');
+                    throw new Error('Something went wrong, and this is what we wanted');
+                })
+                
+                .addTest(function anotherFailingTest(){
+                    throw new Error('This is not supposed to happen');
                 })
                 
                 .runTests()
