@@ -91,11 +91,15 @@ var testEnv = (function(){
         var duration = new Date().getTime() - startTime;
         
         if(testUnit.type == testableUnitType.throwingError){
-            if(success) message = assertionErrors.testDidNotReturnError;
-            else {
-                message = "";
-                this.cntFailed--;
+            if(success){
+                message = assertionErrors.testDidNotReturnError;
+                this.cntFailed++;
             }
+            else{
+                this.cntFailed--;
+                message = "";
+            }
+                
             success = !success;
         }
         
@@ -149,8 +153,7 @@ var testEnv = (function(){
         },
         runTests: function(){
             this.testResults.length = 0;
-            if(typeof this.init === 'function')
-                this.init();
+            if(typeof this.init === 'function') this.init();
                 
             runAll.call(this);
             return this;
