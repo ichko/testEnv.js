@@ -1,21 +1,33 @@
 var testEnv = (function(){
     
     var assertionErrors = {
-            error: 'ERROR'
+            error: 'Error',
+            testDidNotReturnError: 'Error test did not fail',
+            isTrue: 'isTrue failed',
+            isFalse: 'isFalse failed',
+            areEqual: 'areEqual failed',
+            areEquiv: 'areEquiv failed',
+            isFunction: 'isFunction failed',
+            isObject: 'isObject failed',
+            isNumber: 'isNumber failed',
+            isString: 'isString failed',
+            hasProp: 'hasProp failed',
+            lengthIs: 'lengthIs failed',
+            isEmpty: 'isEmpty failed'
         },
         assertPredicats = {
-            isTrue: { predicat: function(x){ return x; }, errMessage: assertionErrors.error },
-            isFalse: { predicat: function(x){ return !x; }, errMessage: assertionErrors.error },
-            areEqual: { predicat: function(x, y){ return x == y; }, errMessage: assertionErrors.error },
-            areEquiv: { predicat: function(x, y){ return x === y; }, errMessage: assertionErrors.error },
-            isFunction: { predicat: function(x){ return typeof x === 'function'; }, errMessage: assertionErrors.error },
-            isObject: { predicat: function(x){ return typeof x === 'object'; }, errMessage: assertionErrors.error },
-            isNumber: { predicat: function(x){ return typeof x === 'number'; }, errMessage: assertionErrors.error },
-            isString: { predicat: function(x){ return typeof x === 'string'; }, errMessage: assertionErrors.error },
-            hasProp: { predicat: function(x, y){ return x.hasOwnProperty(y); }, errMessage: assertionErrors.error },
+            isTrue: { predicat: function(x){ return x; }, errMessage: assertionErrors.isTrue },
+            isFalse: { predicat: function(x){ return !x; }, errMessage: assertionErrors.isFalse },
+            areEqual: { predicat: function(x, y){ return x == y; }, errMessage: assertionErrors.areEqual },
+            areEquiv: { predicat: function(x, y){ return x === y; }, errMessage: assertionErrors.areEquiv },
+            isFunction: { predicat: function(x){ return typeof x === 'function'; }, errMessage: assertionErrors.isFunction },
+            isObject: { predicat: function(x){ return typeof x === 'object'; }, errMessage: assertionErrors.isObject },
+            isNumber: { predicat: function(x){ return typeof x === 'number'; }, errMessage: assertionErrors.isNumber },
+            isString: { predicat: function(x){ return typeof x === 'string'; }, errMessage: assertionErrors.isString },
+            hasProp: { predicat: function(x, y){ return x.hasOwnProperty(y); }, errMessage: assertionErrors.hasProp },
             array: {
-                lengthIs: { predicat: function(a, l){ return a.length == l; }, errMessage: assertionErrors.error },
-                isEmpty: { predicat: function(a){ return a.length == 0; }, errMessage: assertionErrors.error }
+                lengthIs: { predicat: function(a, l){ return a.length == l; }, errMessage: assertionErrors.lengthIs },
+                isEmpty: { predicat: function(a){ return a.length == 0; }, errMessage: assertionErrors.isEmpty }
             }
         },
         assertionContext = {assert: {}},
@@ -59,27 +71,31 @@ var testEnv = (function(){
         this.init = init;
         this.testResults = [];
         this.testUnits = [];
+        this.cntFailed = 0;
         
         return this;
     }
     
     function runTestableUnit(testUnit){
         var startTime = new Date().getTime(),
-            endTime = 0,
             message = "",
             success = true;
         
         try{
             testUnit.method.call(assertionContext);
-            endTime = new Date().getTime();
         }catch(error){
-            endTime = new Date().getTime();
-            message = error.message;
+            message = error;
             success = false;
+            this.cntFailed++;
         }
-        var duration = startTime - endTime;
+        var duration = new Date().getTime() - startTime;
         
         if(testUnit.type == testableUnitType.throwingError){
+            if(success) message = assertionErrors.testDidNotReturnError;
+            else {
+                message = "";
+                this.cntFailed--;
+            }
             success = !success;
         }
         
@@ -91,6 +107,31 @@ var testEnv = (function(){
         this.testUnits.forEach(function(testUnit){
             runTestableUnit.call(me, testUnit);
         });
+    }
+    
+    function printResults(tableMod){
+        console.log('%c All: ' + this.testResults.length + 
+                    ' | Failed: ' + this.cntFailed + 
+                    ' | Succeeded: ' + (this.testResults.length - this.cntFailed),
+                    'color: #999;');
+        
+        if(tableMod){
+            console.table(this.testResults);
+        }else{
+            var testCnt = 0;
+            this.testResults.forEach(function(testResult){
+                console.log('%c' + 
+                            testCnt++ + " " +
+                            testResult.methodName +
+                            '%c [' + testResult.executionTime + 'ms] ' + 
+                            '%c '+ (testResult.message ? testResult.message : ""),
+                            'color: ' + (testResult.success ? 'green' : 'red'),
+                            'font-size: 8pt;',
+                            '');
+            });
+        }
+        
+        return this;
     }
     
     testEnv.prototype = {
@@ -108,10 +149,14 @@ var testEnv = (function(){
         },
         runTests: function(){
             this.testResults.length = 0;
-            this.init();
+            if(typeof this.init === 'function')
+                this.init();
+                
             runAll.call(this);
             return this;
-        }
+        },
+        printResults: printResults,
+        assertionContext: assertionContext
     };
     
     return {
