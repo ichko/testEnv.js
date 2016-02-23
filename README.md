@@ -3,7 +3,7 @@ Simple JS testing library
 
 ##Example
 ```javascript
-var testEnv = testEnv || {};
+var testEnv = require("./testEnv.js");
 var tests = testEnv.init()
 
     .addTest(function checkIfPythagoreWasRight(){
@@ -19,7 +19,7 @@ var tests = testEnv.init()
     })
     
     .addTest(function longExecution(){
-        for(var i = 0;i < 50000000;i++)
+        for(var i = 0;i < 50000;i++)
             ; // Heavy work
     })
     

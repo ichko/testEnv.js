@@ -1,8 +1,8 @@
 var testEnv = (function(){
     
-    var assertionErrors = {
-            error: 'Error',
-            testDidNotReturnError: 'Error test did not fail',
+    var error = {
+            generic: 'Error',
+            testDidNotReturnError: 'errorTest is supposed to thow error',
             isTrue: 'isTrue failed',
             isFalse: 'isFalse failed',
             areEqual: 'areEqual failed',
@@ -13,21 +13,22 @@ var testEnv = (function(){
             isString: 'isString failed',
             hasProp: 'hasProp failed',
             lengthIs: 'lengthIs failed',
-            isEmpty: 'isEmpty failed'
+            isEmpty: 'isEmpty failed',
+            invalidTestId: 'Invalid test id'
         },
         assertPredicats = {
-            isTrue: { predicat: function(x){ return x; }, errMessage: assertionErrors.isTrue },
-            isFalse: { predicat: function(x){ return !x; }, errMessage: assertionErrors.isFalse },
-            areEqual: { predicat: function(x, y){ return x == y; }, errMessage: assertionErrors.areEqual },
-            areEquiv: { predicat: function(x, y){ return x === y; }, errMessage: assertionErrors.areEquiv },
-            isFunction: { predicat: function(x){ return typeof x === 'function'; }, errMessage: assertionErrors.isFunction },
-            isObject: { predicat: function(x){ return typeof x === 'object'; }, errMessage: assertionErrors.isObject },
-            isNumber: { predicat: function(x){ return typeof x === 'number'; }, errMessage: assertionErrors.isNumber },
-            isString: { predicat: function(x){ return typeof x === 'string'; }, errMessage: assertionErrors.isString },
-            hasProp: { predicat: function(x, y){ return x.hasOwnProperty(y); }, errMessage: assertionErrors.hasProp },
+            isTrue: { predicat: function(x){ return x; }, errMessage: error.isTrue },
+            isFalse: { predicat: function(x){ return !x; }, errMessage: error.isFalse },
+            areEqual: { predicat: function(x, y){ return x == y; }, errMessage: error.areEqual },
+            areEquiv: { predicat: function(x, y){ return x === y; }, errMessage: error.areEquiv },
+            isFunction: { predicat: function(x){ return typeof x === 'function'; }, errMessage: error.isFunction },
+            isObject: { predicat: function(x){ return typeof x === 'object'; }, errMessage: error.isObject },
+            isNumber: { predicat: function(x){ return typeof x === 'number'; }, errMessage: error.isNumber },
+            isString: { predicat: function(x){ return typeof x === 'string'; }, errMessage: error.isString },
+            hasProp: { predicat: function(x, y){ return x.hasOwnProperty(y); }, errMessage: error.hasProp },
             array: {
-                lengthIs: { predicat: function(a, l){ return a.length == l; }, errMessage: assertionErrors.lengthIs },
-                isEmpty: { predicat: function(a){ return a.length == 0; }, errMessage: assertionErrors.isEmpty }
+                lengthIs: { predicat: function(a, l){ return a.length == l; }, errMessage: error.lengthIs },
+                isEmpty: { predicat: function(a){ return a.length == 0; }, errMessage: error.isEmpty }
             }
         },
         assertionContext = {assert: {}},
@@ -92,7 +93,7 @@ var testEnv = (function(){
         
         if(testUnit.type == testableUnitType.throwingError){
             if(success){
-                message = assertionErrors.testDidNotReturnError;
+                message = error.testDidNotReturnError;
                 this.cntFailed++;
             }
             else{
@@ -103,13 +104,13 @@ var testEnv = (function(){
             success = !success;
         }
         
-        this.testResults.push(new testResult(success, testUnit.method.name, duration, message));
+        return new testResult(success, testUnit.method.name, duration, message);
     }
     
     function runAll(){
         var me = this;
         this.testUnits.forEach(function(testUnit){
-            runTestableUnit.call(me, testUnit);
+            me.testResults.push(runTestableUnit.call(me, testUnit));
         });
     }
     
@@ -154,9 +155,24 @@ var testEnv = (function(){
         runTests: function(){
             this.testResults.length = 0;
             if(typeof this.init === 'function') this.init();
-                
+            
             runAll.call(this);
             return this;
+        },
+        runTest: function(id){
+            if(id >= 0 && id < this.testUnits.length){
+                var testResult = runTestableUnit.call(this, this.testUnits[id]);
+                this.testResults[id] = testResult;
+                return testResult;
+            }
+            
+            throw new Error(error.invalidTestId);
+        },
+        runTestResult: function(id){
+            if(id >= 0 && id < this.testResults.length)
+                return this.testResults[id];
+            
+            throw new Error(error.invalidTestId);
         },
         printResults: printResults,
         assertionContext: assertionContext
@@ -170,4 +186,5 @@ var testEnv = (function(){
     
 })();
 
+var module = module || {};
 module.exports = testEnv;
