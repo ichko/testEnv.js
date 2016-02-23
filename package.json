@@ -16,5 +16,8 @@
   "homepage": "https://github.com/ichko/JsTestEnv#readme",
   "devDependencies": {
     "watchify": "^3.7.0"
+  },
+  "bugs": {
+    "url": "https://github.com/ichko/JsTestEnv/issues"
   }
 }
