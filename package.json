@@ -1,0 +1,20 @@
+{
+  "name": "testenv",
+  "version": "1.0.0",
+  "description": "JS unit testing lib",
+  "main": "./app/tests.js",
+  "scripts": {
+    "build": "browserify ./app/tests.js -o ./app/bundle.js",
+    "watch": "watchify ./app/tests.js -o ./app/bundle.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ichko/JsTestEnv.git"
+  },
+  "author": "Iliya Zhechev",
+  "license": "MIT",
+  "homepage": "https://github.com/ichko/JsTestEnv#readme",
+  "devDependencies": {
+    "watchify": "^3.7.0"
+  }
+}
