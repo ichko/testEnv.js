@@ -2,7 +2,7 @@ var testEnv = (function(){
     
     var error = {
             generic: 'Error',
-            testDidNotReturnError: 'errorTest is supposed to thow error',
+            testDidNotReturnError: 'errorTest is supposed to throw error',
             isTrue: 'isTrue failed',
             isFalse: 'isFalse failed',
             areEqual: 'areEqual failed',
@@ -185,7 +185,7 @@ var testEnv = (function(){
             
             throw new Error(error.invalidTestId);
         },
-        runTestResult: function(id){
+        getTestResult: function(id){
             if(id >= 0 && id < this.testResults.length)
                 return this.testResults[id];
             
