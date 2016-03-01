@@ -2,7 +2,7 @@ var testEnv = (function(){
     
     var error = {
             generic: 'Error',
-            testDidNotReturnError: 'errorTest is supposed to thow error',
+            testDidNotReturnError: 'errorTest is supposed to throw error',
             isTrue: 'isTrue failed',
             isFalse: 'isFalse failed',
             areEqual: 'areEqual failed',
