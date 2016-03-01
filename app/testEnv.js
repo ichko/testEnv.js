@@ -168,7 +168,7 @@ var testEnv = (function(){
             
             throw new Error(error.invalidTestId);
         },
-        runTestResult: function(id){
+        getTestResult: function(id){
             if(id >= 0 && id < this.testResults.length)
                 return this.testResults[id];
             
