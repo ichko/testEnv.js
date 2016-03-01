@@ -139,6 +139,23 @@ var testEnv = (function(){
         return this;
     }
     
+    function nodePrintResults(tableMod){
+        console.log('All: ' + this.testResults.length + 
+                    ' | Failed: ' + this.cntFailed + 
+                    ' | Succeeded: ' + (this.testResults.length - this.cntFailed));
+        
+        var testCnt = 0;
+        this.testResults.forEach(function(testResult){
+            console.log(testCnt++ + " " +
+                        testResult.methodName +
+                        ' [' + testResult.executionTime + 'ms] ' + 
+                        ' '+ (testResult.message ? testResult.message : "") + 
+                        'passed: ' + (testResult.success ? 'yes' : 'no'));
+        });
+        
+        return this;
+    }
+    
     testEnv.prototype = {
         addTest: function(testMethod){
             this.testUnits.push(new testableUnit(testMethod, testableUnitType.assertive));
