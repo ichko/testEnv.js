@@ -1,7 +1,7 @@
-#JS Unit testing#
+# JS Unit testing#
 Simple JS testing library
 
-##Example
+## Example
 ```javascript
 var testEnv = require("./testEnv.js");
 var tests = testEnv.init()
