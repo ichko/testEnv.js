@@ -1,4 +1,4 @@
-# JS Unit testing#
+# JS Unit testing
 Simple JS testing library
 
 ## Example
